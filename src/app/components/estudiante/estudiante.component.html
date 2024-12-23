@@ -1,0 +1,67 @@
+<div class="container mx-auto p-4">
+    <h2 class="text-2xl font-bold mb-4 text-center">Lista de Estudiantes</h2>
+    <table class="w-full bg-white border border-gray-300 rounded-lg overflow-hidden shadow-md">
+        <thead>
+            <tr class="bg-gray-100 text-left text-gray-600 text-center">
+                <th class="py-3 px-4 border-b text-sm font-semibold">Código</th>
+                <th class="py-3 px-4 border-b text-sm font-semibold">Nombre</th>
+                <th class="py-3 px-4 border-b text-sm font-semibold">Parcial 1</th>
+                <th class="py-3 px-4 border-b text-sm font-semibold">Parcial 2</th>
+                <th class="py-3 px-4 border-b text-sm font-semibold">Calificación Final</th>
+                <th class="py-3 px-4 border-b text-sm font-semibold">Estado</th>
+                <th class="py-3 px-4 border-b text-sm font-semibold">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let estudiante of estudiantes; let i = index" class="hover:bg-gray-50 text-gray-700 text-center">
+                <td class="py-2 px-4 border-b text-sm">{{ estudiante.codigo }}</td>
+                <td class="py-2 px-4 border-b text-sm">{{ estudiante.nombres }} {{ estudiante.apellidos }}</td>
+                <td class="py-2 px-4 border-b text-sm">{{ estudiante.parcial1 | number:'1.2-2' }}</td>
+                <td class="py-2 px-4 border-b text-sm">{{ estudiante.parcial2 | number:'1.2-2' }}</td>
+                <td class="py-2 px-4 border-b text-sm">{{ estudiante.calificacionFinal | number:'1.2-2' }}</td>
+                <td class="py-2 px-4 border-b text-sm font-semibold" [ngClass]="{
+            'text-green-600': estudiante.estado === 'Aprobado',
+            'text-red-600': estudiante.estado === 'Reprobado'
+            }">{{ estudiante.estado }}</td>
+                <td class="py-2 px-4 border-b">
+                    <button class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded"
+                        (click)="eliminarEstudiante(i)">
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="fixed z-10 inset-0 overflow-y-auto" *ngIf="mostrarModal">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-xl font-bold mb-4">Agregar Estudiante</h3>
+                <form (ngSubmit)="agregarEstudiante()">
+                    <input class="border p-2 mb-2 w-full" [(ngModel)]="nuevoEstudiante.nombres" placeholder="Nombres"
+                        name="nombres" required />
+                    <input class="border p-2 mb-2 w-full" [(ngModel)]="nuevoEstudiante.apellidos"
+                        placeholder="Apellidos" name="apellidos" required />
+
+                    <input class="border p-2 mb-2 w-full" [(ngModel)]="nuevoEstudiante.parcial1" placeholder="Parcial 1"
+                        name="parcial1" type="number" required min="1" max="10"
+                        [ngClass]="{'border-red-500': parcial1Invalido}" (ngModelChange)="validarNota('parcial1')" />
+
+                    <input class="border p-2 mb-2 w-full" [(ngModel)]="nuevoEstudiante.parcial2" placeholder="Parcial 2"
+                        name="parcial2" type="number" required min="1" max="10"
+                        [ngClass]="{'border-red-500': parcial2Invalido}" (ngModelChange)="validarNota('parcial2')" />
+
+                    <div class="flex justify-end">
+                        <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+                            (click)="cerrarModal()">Cancelar</button>
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded"
+                            [disabled]="parcial1Invalido || parcial2Invalido">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <button class="bg-blue-500 text-white px-4 py-2 rounded mt-4" (click)="abrirModal()">Agregar Estudiante</button>
+
+</div>
