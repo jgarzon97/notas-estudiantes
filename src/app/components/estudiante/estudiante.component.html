@@ -13,7 +13,8 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let estudiante of estudiantes; let i = index" class="hover:bg-gray-50 text-gray-700 text-center">
+            <tr *ngFor="let estudiante of estudiantes; let i = index"
+                class="hover:bg-gray-50 text-gray-700 text-center">
                 <td class="py-2 px-4 border-b text-sm">{{ estudiante.codigo }}</td>
                 <td class="py-2 px-4 border-b text-sm">{{ estudiante.nombres }} {{ estudiante.apellidos }}</td>
                 <td class="py-2 px-4 border-b text-sm">{{ estudiante.parcial1 | number:'1.2-2' }}</td>
@@ -43,6 +44,12 @@
                     <input class="border p-2 mb-2 w-full" [(ngModel)]="nuevoEstudiante.apellidos"
                         placeholder="Apellidos" name="apellidos" required />
 
+                    <select class="border p-2 mb-2 w-full" [(ngModel)]="nuevoEstudiante.sexo" name="sexo" required>
+                        <option value="" disabled selected>Seleccionar Sexo</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                    </select>
+
                     <input class="border p-2 mb-2 w-full" [(ngModel)]="nuevoEstudiante.parcial1" placeholder="Parcial 1"
                         name="parcial1" type="number" required min="1" max="10"
                         [ngClass]="{'border-red-500': parcial1Invalido}" (ngModelChange)="validarNota('parcial1')" />
@@ -62,6 +69,43 @@
         </div>
     </div>
 
-    <button class="bg-blue-500 text-white px-4 py-2 rounded mt-4" (click)="abrirModal()">Agregar Estudiante</button>
+    <div class="flex justify-center space-x-4 mt-4">
+        <button class="bg-blue-500 text-white px-4 py-2 rounded" (click)="abrirModal()">Agregar Estudiante</button>
+        <button class="bg-green-500 text-white px-4 py-2 rounded" (click)="abrirModalEstadisticas()">Ver
+            Estadísticas</button>
+    </div>
+</div>
 
+<div class="fixed z-10 inset-0 overflow-y-auto" *ngIf="mostrarModalEstadisticas">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-3/4 max-w-4xl">
+            <h3 class="text-xl font-bold mb-4 text-center">Estadísticas</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-gray-100 p-4 rounded shadow">
+                    <h4 class="font-semibold">Porcentaje Aprobados/Reprobados</h4>
+                    <p>Aprobados: {{ calcularPorcentajeAprobadosReprobados().aprobados }}%</p>
+                    <p>Reprobados: {{ calcularPorcentajeAprobadosReprobados().reprobados }}%</p>
+                </div>
+                <div class="bg-gray-100 p-4 rounded shadow">
+                    <h4 class="font-semibold">Porcentaje Aprobados por Sexo</h4>
+                    <p>Masculino: {{ calcularPorcentajeAprobadosPorSexo().masculino }}%</p>
+                    <p>Femenino: {{ calcularPorcentajeAprobadosPorSexo().femenino }}%</p>
+                </div>
+                <div class="bg-gray-100 p-4 rounded shadow">
+                    <h4 class="font-semibold">Promedio General y Mejores</h4>
+                    <p>Promedio General: {{ calcularPromedioGeneralYMejores().promedio }}</p>
+                    <p>Estudiantes con Mejor Nota:</p>
+                    <ul>
+                        <li *ngFor="let estudiante of calcularPromedioGeneralYMejores().mejoresEstudiantes">
+                            {{ estudiante.nombres }} {{ estudiante.apellidos }} ({{ estudiante.calificacionFinal }})
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex justify-end mt-4">
+                <button class="bg-red-500 text-white px-4 py-2 rounded"
+                    (click)="cerrarModalEstadisticas()">Cerrar</button>
+            </div>
+        </div>
+    </div>
 </div>

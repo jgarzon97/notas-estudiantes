@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 
 export class EstudianteComponent {
   mostrarModal: boolean = false;
+  mostrarModalEstadisticas: boolean = false;
   nuevoEstudiante: Estudiante = this.crearNuevoEstudiante();
   parcial1Invalido: boolean = false;
   parcial2Invalido: boolean = false;
@@ -42,6 +43,7 @@ export class EstudianteComponent {
     if (
       this.nuevoEstudiante.nombres &&
       this.nuevoEstudiante.apellidos &&
+      this.nuevoEstudiante.sexo &&
       this.nuevoEstudiante.parcial1 >= 1 &&
       this.nuevoEstudiante.parcial1 <= 10 &&
       this.nuevoEstudiante.parcial2 >= 1 &&
@@ -75,6 +77,48 @@ export class EstudianteComponent {
 
   cerrarModal(): void {
     this.mostrarModal = false;
+  }
+
+  abrirModalEstadisticas(): void {
+    this.mostrarModalEstadisticas = true;
+  }
+
+  cerrarModalEstadisticas(): void {
+    this.mostrarModalEstadisticas = false;
+  }
+
+  calcularPorcentajeAprobadosReprobados() {
+    const total = this.estudiantes.length;
+    const aprobados = this.estudiantes.filter(e => e.estado === 'Aprobado').length;
+    const reprobados = total - aprobados;
+    return {
+      aprobados: ((aprobados / total) * 100).toFixed(2),
+      reprobados: ((reprobados / total) * 100).toFixed(2)
+    };
+  }
+
+  calcularPorcentajeAprobadosPorSexo() {
+    const total = this.estudiantes.length;
+    const masculinos = this.estudiantes.filter(e => e.sexo === 'M' && e.estado === 'Aprobado').length;
+    const femeninos = this.estudiantes.filter(e => e.sexo === 'F' && e.estado === 'Aprobado').length;
+    const totalMasculinos = this.estudiantes.filter(e => e.sexo === 'M').length;
+    const totalFemeninos = this.estudiantes.filter(e => e.sexo === 'F').length;
+
+    return {
+      masculino: totalMasculinos > 0 ? ((masculinos / totalMasculinos) * 100).toFixed(2) : '0.00',
+      femenino: totalFemeninos > 0 ? ((femeninos / totalFemeninos) * 100).toFixed(2) : '0.00'
+    };
+  }
+
+  calcularPromedioGeneralYMejores() {
+    const promedio =
+      this.estudiantes.reduce((acc, estudiante) => acc + estudiante.calificacionFinal, 0) / this.estudiantes.length;
+    const mejoresEstudiantes = this.estudiantes.filter(e => e.calificacionFinal > promedio);
+
+    return {
+      promedio: promedio.toFixed(2),
+      mejoresEstudiantes: mejoresEstudiantes
+    };
   }
 
   get estudiantes(): Estudiante[] {
